@@ -72,8 +72,48 @@ class Projetil {
     }
 }
 
+class Invasor {
+    constructor() {
+        this.velocidade = {
+            x: 0,
+            y: 0
+        }
+
+        const imagem = new Image()
+        imagem.src = './images/invader.png'
+        imagem.onload = () => {
+            const escala = 1
+            this.image = imagem
+            this.width = imagem.width * escala
+            this.height = imagem.height * escala
+            this.position = {
+                x: canvas.width / 2 - this.width / 2,
+                y: canvas.height / 2
+            }
+        }
+
+    }
+
+    desenhar() {
+        // ctx.fillStyle = 'red'
+        // ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
+
+        ctx.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+    }
+
+    update() {
+        if (this.image) {
+            this.desenhar()
+            this.position.x += this.velocidade.x
+            this.position.y += this.velocidade.y
+        }
+
+    }
+}
+
 const jogador = new Jogador()
 const projeteis = []
+const invasor = new Invasor()
 const setas = {
     ArrowLeft: {
         pressed: false
@@ -90,6 +130,7 @@ function animar() {
     requestAnimationFrame(animar)
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
+    invasor.update()
     jogador.update()
     projeteis.forEach((projetil, index) => {
         if (projetil.posiçao.y + projetil.radius <=0 ) {
