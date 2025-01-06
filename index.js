@@ -50,7 +50,30 @@ class Jogador {
     }
 }
 
+class Projetil {
+    constructor({ posiçao, velocidade }) {
+        this.posiçao = posiçao
+        this.velocidade = velocidade
+        this.radius = 4
+    }
+
+    desenhar() {
+        ctx.beginPath()
+        ctx.arc(this.posiçao.x, this.posiçao.y, this.radius, 0, Math.PI * 2)
+        ctx.fillStyle = 'white'
+        ctx.fill()
+        ctx.closePath()
+    }
+
+    update() {
+        this.desenhar()
+        this.posiçao.x += this.velocidade.x
+        this.posiçao.y += this.velocidade.y
+    }
+}
+
 const jogador = new Jogador()
+const projeteis = []
 const setas = {
     ArrowLeft: {
         pressed: false
@@ -68,7 +91,9 @@ function animar() {
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     jogador.update()
-
+    projeteis.forEach((projetil) => {
+        projetil.update()
+    })
     if (setas.ArrowLeft.pressed && jogador.position.x >= 0) {
         jogador.velocidade.x = -7
         jogador.rotaçao = -0.15
@@ -77,7 +102,7 @@ function animar() {
         jogador.rotaçao = 0.15
     } else {
         jogador.velocidade.x = 0
-        jogador.rotaçao =0
+        jogador.rotaçao = 0
     }
 }
 
@@ -113,6 +138,19 @@ addEventListener('keyup', ({ key }) => {
         case ' ':
             console.log('espaço')
             setas.space.pressed = true
+            projeteis.push(
+                new Projetil({
+                    posiçao: {
+                        x: 300,
+                        y: 300
+                    },
+                    velocidade: {
+                        x: 0,
+                        y: -5
+                    }
+                })
+            )
+
             break;
     }
 })
