@@ -6,12 +6,13 @@ canvas.height = innerHeight
 
 class Jogador {
     constructor() {
-        
 
         this.velocidade = {
             x: 0,
             y: 0
         }
+
+        this.rotaçao = 0
 
         const imagem = new Image()
         imagem.src = './images/spaceship.png'
@@ -21,9 +22,9 @@ class Jogador {
             this.width = imagem.width * escala
             this.height = imagem.height * escala
             this.position = {
-            x: canvas.width / 2 - this.width/ 2 ,
-            y: canvas.height - this.height- 20
-        }
+                x: canvas.width / 2 - this.width / 2,
+                y: canvas.height - this.height - 20
+            }
         }
 
     }
@@ -31,30 +32,34 @@ class Jogador {
     desenhar() {
         // ctx.fillStyle = 'red'
         // ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
-            ctx.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
-        
 
+        ctx.save()
+        ctx.translate(jogador.position.x + jogador.width / 2, jogador.position.y + jogador.height / 2)
+        ctx.rotate(this.rotaçao)
+        ctx.translate(-jogador.position.x - jogador.width / 2, -jogador.position.y - jogador.height / 2)
+        ctx.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+        ctx.restore()
     }
 
-  update(){
-    if(this.image){
-    this.desenhar()
-    this.position.x += this.velocidade.x
+    update() {
+        if (this.image) {
+            this.desenhar()
+            this.position.x += this.velocidade.x
+        }
+
     }
-    
-  }
 }
 
 const jogador = new Jogador()
 const setas = {
     ArrowLeft: {
-        pressed : false
+        pressed: false
     },
     ArrowRight: {
-        pressed : false
+        pressed: false
     },
     space: {
-        pressed : false
+        pressed: false
     }
 }
 
@@ -65,17 +70,20 @@ function animar() {
     jogador.update()
 
     if (setas.ArrowLeft.pressed && jogador.position.x >= 0) {
-        jogador.velocidade.x = -5
-    } else if(setas.ArrowRight.pressed && jogador.position.x + jogador.width <= canvas.width) {
-        jogador.velocidade.x = 5
-    }else{
+        jogador.velocidade.x = -7
+        jogador.rotaçao = -0.15
+    } else if (setas.ArrowRight.pressed && jogador.position.x + jogador.width <= canvas.width) {
+        jogador.velocidade.x = 7
+        jogador.rotaçao = 0.15
+    } else {
         jogador.velocidade.x = 0
+        jogador.rotaçao =0
     }
 }
 
 animar()
 
-addEventListener('keydown', ({key}) =>{
+addEventListener('keydown', ({ key }) => {
     switch (key) {
         case 'ArrowLeft':
             console.log('esquerda')
@@ -88,11 +96,11 @@ addEventListener('keydown', ({key}) =>{
         case ' ':
             console.log('espaço')
             setas.space.pressed = true
-            break; 
+            break;
     }
 })
 
-addEventListener('keyup', ({key}) =>{
+addEventListener('keyup', ({ key }) => {
     switch (key) {
         case 'ArrowLeft':
             console.log('esquerda')
@@ -105,6 +113,6 @@ addEventListener('keyup', ({key}) =>{
         case ' ':
             console.log('espaço')
             setas.space.pressed = true
-            break; 
+            break;
     }
 })
