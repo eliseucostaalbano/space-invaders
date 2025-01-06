@@ -91,8 +91,14 @@ function animar() {
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     jogador.update()
-    projeteis.forEach((projetil) => {
-        projetil.update()
+    projeteis.forEach((projetil, index) => {
+        if (projetil.posiçao.y + projetil.radius <=0 ) {
+            setTimeout(()=>{
+             projeteis.splice(index, 1)   
+            }, 0)
+        } else {
+         projetil.update()
+        }
     })
     if (setas.ArrowLeft.pressed && jogador.position.x >= 0) {
         jogador.velocidade.x = -7
@@ -111,38 +117,18 @@ animar()
 addEventListener('keydown', ({ key }) => {
     switch (key) {
         case 'ArrowLeft':
-            console.log('esquerda')
             setas.ArrowLeft.pressed = true
             break;
         case 'ArrowRight':
-            console.log('direita')
             setas.ArrowRight.pressed = true
             break;
         case ' ':
-            console.log('espaço')
-            setas.space.pressed = true
-            break;
-    }
-})
-
-addEventListener('keyup', ({ key }) => {
-    switch (key) {
-        case 'ArrowLeft':
-            console.log('esquerda')
-            setas.ArrowLeft.pressed = false
-            break;
-        case 'ArrowRight':
-            console.log('direita')
-            setas.ArrowRight.pressed = false
-            break;
-        case ' ':
-            console.log('espaço')
             setas.space.pressed = true
             projeteis.push(
                 new Projetil({
                     posiçao: {
-                        x: 300,
-                        y: 300
+                        x: jogador.position.x + jogador.width /2,
+                        y: jogador.position.y
                     },
                     velocidade: {
                         x: 0,
@@ -150,7 +136,17 @@ addEventListener('keyup', ({ key }) => {
                     }
                 })
             )
+            break;
+    }
+})
 
+addEventListener('keyup', ({ key }) => {
+    switch (key) {
+        case 'ArrowLeft':
+            setas.ArrowLeft.pressed = false
+            break;
+        case 'ArrowRight':
+            setas.ArrowRight.pressed = false
             break;
     }
 })
