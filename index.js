@@ -101,11 +101,11 @@ class Invasor {
         ctx.drawImage(this.image, this.posiçao.x, this.posiçao.y, this.width, this.height)
     }
 
-    update() {
+    update({velo}) {
         if (this.image) {
             this.desenhar()
-            this.posiçao.x += this.velocidade.x
-            this.posiçao.y += this.velocidade.y
+            this.posiçao.x += velo.x
+            this.posiçao.y += velo.y
         }
 
     }
@@ -119,13 +119,15 @@ class Grid {
         }
 
         this.velocidade = {
-            x: 0,
+            x: 4,
             y: 0
         }
 
         this.invasores = []
         const columns = Math.floor(Math.random() * 10 + 5)
         const rows = Math.floor(Math.random() * 5 + 2)
+        
+        this.width = columns * 30
 
         for (let i = 0; i < columns; i++) {
             for (let j = 0; j < rows; j++) {
@@ -141,7 +143,14 @@ class Grid {
     }
 
     update() {
+        this.posiçao.x += this.velocidade.x
+        this.posiçao.y += this.velocidade.y
+         this.velocidade.y = 0
 
+        if (this.posiçao.x + this.width >= canvas.width || this.posiçao.x  <= 0) {
+            this.velocidade.x = -this.velocidade.x 
+            this.velocidade.y = 30 
+        }
     }
 }
 
@@ -178,7 +187,7 @@ function animar() {
     grids.forEach(grid => {
         grid.update()
         grid.invasores.forEach(invasor => {
-            invasor.update()
+            invasor.update({velo: grid.velocidade})
         })
     })
 
