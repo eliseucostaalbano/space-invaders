@@ -21,7 +21,7 @@ class Jogador {
             this.image = imagem
             this.width = imagem.width * escala
             this.height = imagem.height * escala
-            this.position = {
+            this.posiçao = {
                 x: canvas.width / 2 - this.width / 2,
                 y: canvas.height - this.height - 20
             }
@@ -34,17 +34,17 @@ class Jogador {
         // ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
         ctx.save()
-        ctx.translate(jogador.position.x + jogador.width / 2, jogador.position.y + jogador.height / 2)
+        ctx.translate(jogador.posiçao.x + jogador.width / 2, jogador.posiçao.y + jogador.height / 2)
         ctx.rotate(this.rotaçao)
-        ctx.translate(-jogador.position.x - jogador.width / 2, -jogador.position.y - jogador.height / 2)
-        ctx.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+        ctx.translate(-jogador.posiçao.x - jogador.width / 2, -jogador.posiçao.y - jogador.height / 2)
+        ctx.drawImage(this.image, this.posiçao.x, this.posiçao.y, this.width, this.height)
         ctx.restore()
     }
 
     update() {
         if (this.image) {
             this.desenhar()
-            this.position.x += this.velocidade.x
+            this.posiçao.x += this.velocidade.x
         }
 
     }
@@ -73,7 +73,7 @@ class Projetil {
 }
 
 class Invasor {
-    constructor() {
+    constructor({ posiçao }) {
         this.velocidade = {
             x: 0,
             y: 0
@@ -86,9 +86,9 @@ class Invasor {
             this.image = imagem
             this.width = imagem.width * escala
             this.height = imagem.height * escala
-            this.position = {
-                x: canvas.width / 2 - this.width / 2,
-                y: canvas.height / 2
+            this.posiçao = {
+                x: posiçao.x,
+                y: posiçao.y
             }
         }
 
@@ -96,24 +96,58 @@ class Invasor {
 
     desenhar() {
         // ctx.fillStyle = 'red'
-        // ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
+        // ctx.fillRect(this.posição.x, this.posiçao.y, this.width, this.height)
 
-        ctx.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
+        ctx.drawImage(this.image, this.posiçao.x, this.posiçao.y, this.width, this.height)
     }
 
     update() {
         if (this.image) {
             this.desenhar()
-            this.position.x += this.velocidade.x
-            this.position.y += this.velocidade.y
+            this.posiçao.x += this.velocidade.x
+            this.posiçao.y += this.velocidade.y
         }
+
+    }
+}
+
+class Grid {
+    constructor() {
+        this.posiçao = {
+            x: 0,
+            y: 0
+        }
+
+        this.velocidade = {
+            x: 0,
+            y: 0
+        }
+
+        this.invasores = []
+        const columns = Math.floor(Math.random() * 10 + 5)
+        const rows = Math.floor(Math.random() * 5 + 2)
+
+        for (let i = 0; i < columns; i++) {
+            for (let j = 0; j < rows; j++) {
+                this.invasores.push(new Invasor({
+                    posiçao: {
+                        x: i * 30,
+                        y: j * 30
+                    }
+                })
+                )
+            }
+        }
+    }
+
+    update() {
 
     }
 }
 
 const jogador = new Jogador()
 const projeteis = []
-const invasor = new Invasor()
+const grids = [new Grid()]
 const setas = {
     ArrowLeft: {
         pressed: false
@@ -130,21 +164,28 @@ function animar() {
     requestAnimationFrame(animar)
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
-    invasor.update()
     jogador.update()
     projeteis.forEach((projetil, index) => {
-        if (projetil.posiçao.y + projetil.radius <=0 ) {
-            setTimeout(()=>{
-             projeteis.splice(index, 1)   
+        if (projetil.posiçao.y + projetil.radius <= 0) {
+            setTimeout(() => {
+                projeteis.splice(index, 1)
             }, 0)
         } else {
-         projetil.update()
+            projetil.update()
         }
     })
-    if (setas.ArrowLeft.pressed && jogador.position.x >= 0) {
+
+    grids.forEach(grid => {
+        grid.update()
+        grid.invasores.forEach(invasor => {
+            invasor.update()
+        })
+    })
+
+    if (setas.ArrowLeft.pressed && jogador.posiçao.x >= 0) {
         jogador.velocidade.x = -7
         jogador.rotaçao = -0.15
-    } else if (setas.ArrowRight.pressed && jogador.position.x + jogador.width <= canvas.width) {
+    } else if (setas.ArrowRight.pressed && jogador.posiçao.x + jogador.width <= canvas.width) {
         jogador.velocidade.x = 7
         jogador.rotaçao = 0.15
     } else {
@@ -168,8 +209,8 @@ addEventListener('keydown', ({ key }) => {
             projeteis.push(
                 new Projetil({
                     posiçao: {
-                        x: jogador.position.x + jogador.width /2,
-                        y: jogador.position.y
+                        x: jogador.posiçao.x + jogador.width / 2,
+                        y: jogador.posiçao.y
                     },
                     velocidade: {
                         x: 0,
