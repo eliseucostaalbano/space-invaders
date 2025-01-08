@@ -195,10 +195,22 @@ function animar() {
             invasor.update({ velo: grid.velocidade })
 
             projeteis.forEach((projetil, j) => {
-                if (projetil.posiçao.y - projetil.radius <= invasor.posiçao.y + invasor.height) {
+                if (projetil.posiçao.y - projetil.radius <= invasor.posiçao.y + invasor.height
+                    && projetil.posiçao.x + projetil.radius >= invasor.posiçao.x
+                    && projetil.posiçao.x - projetil.radius <= invasor.posiçao.x + invasor.width
+                    && projetil.posiçao.y + projetil.radius >= invasor.posiçao.y) {
                     setTimeout(() => {
-                        grid.invasores.splice(i, 1)
-                        projeteis.splice(j, 1)
+                        const invasorEncontrado = grid.invasores.find(invasor2 => invasor2 === invasor
+                        )
+
+                        const projetilEncontrado = projeteis.find(projetil2 => projetil2 === projetil
+                        )
+
+                        if (invasorEncontrado && projetilEncontrado) {
+                            grid.invasores.splice(i, 1)
+                            projeteis.splice(j, 1)
+                        }
+
                     }, 0)
                 }
             })
@@ -245,7 +257,7 @@ addEventListener('keydown', ({ key }) => {
                     },
                     velocidade: {
                         x: 0,
-                        y: -7
+                        y: -9
                     }
                 })
             )
