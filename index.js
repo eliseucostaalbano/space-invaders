@@ -140,6 +140,7 @@ class Grid {
                 )
             }
         }
+        console.log(this.invasores)
     }
 
     update() {
@@ -156,7 +157,7 @@ class Grid {
 
 const jogador = new Jogador()
 const projeteis = []
-const grids = [new Grid()]
+const grids = []
 const setas = {
     ArrowLeft: {
         pressed: false
@@ -168,6 +169,10 @@ const setas = {
         pressed: false
     }
 }
+
+let frames = 0
+let intervaloAleatorio = Math.floor(Math.random() * 500 + 500 ) 
+
 
 function animar() {
     requestAnimationFrame(animar)
@@ -201,6 +206,14 @@ function animar() {
         jogador.velocidade.x = 0
         jogador.rotaçao = 0
     }
+    
+    if (frames % intervaloAleatorio === 0) {
+        grids.push(new Grid())
+        intervaloAleatorio = Math.floor(Math.random() * 500 + 500 )
+        frames = 0
+    }
+
+    frames++
 }
 
 animar()
