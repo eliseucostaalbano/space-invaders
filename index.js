@@ -101,7 +101,7 @@ class Invasor {
         ctx.drawImage(this.image, this.posiçao.x, this.posiçao.y, this.width, this.height)
     }
 
-    update({velo}) {
+    update({ velo }) {
         if (this.image) {
             this.desenhar()
             this.posiçao.x += velo.x
@@ -126,7 +126,7 @@ class Grid {
         this.invasores = []
         const columns = Math.floor(Math.random() * 10 + 5)
         const rows = Math.floor(Math.random() * 5 + 2)
-        
+
         this.width = columns * 30
 
         for (let i = 0; i < columns; i++) {
@@ -146,11 +146,11 @@ class Grid {
     update() {
         this.posiçao.x += this.velocidade.x
         this.posiçao.y += this.velocidade.y
-         this.velocidade.y = 0
+        this.velocidade.y = 0
 
-        if (this.posiçao.x + this.width >= canvas.width || this.posiçao.x  <= 0) {
-            this.velocidade.x = -this.velocidade.x 
-            this.velocidade.y = 30 
+        if (this.posiçao.x + this.width >= canvas.width || this.posiçao.x <= 0) {
+            this.velocidade.x = -this.velocidade.x
+            this.velocidade.y = 30
         }
     }
 }
@@ -171,7 +171,7 @@ const setas = {
 }
 
 let frames = 0
-let intervaloAleatorio = Math.floor(Math.random() * 500 + 500 ) 
+let intervaloAleatorio = Math.floor(Math.random() * 500 + 500)
 
 
 function animar() {
@@ -191,8 +191,17 @@ function animar() {
 
     grids.forEach(grid => {
         grid.update()
-        grid.invasores.forEach(invasor => {
-            invasor.update({velo: grid.velocidade})
+        grid.invasores.forEach((invasor, i) => {
+            invasor.update({ velo: grid.velocidade })
+
+            projeteis.forEach((projetil, j) => {
+                if (projetil.posiçao.y - projetil.radius <= invasor.posiçao.y + invasor.height) {
+                    setTimeout(() => {
+                        grid.invasores.splice(i, 1)
+                        projeteis.splice(j, 1)
+                    }, 0)
+                }
+            })
         })
     })
 
@@ -206,10 +215,10 @@ function animar() {
         jogador.velocidade.x = 0
         jogador.rotaçao = 0
     }
-    
+
     if (frames % intervaloAleatorio === 0) {
         grids.push(new Grid())
-        intervaloAleatorio = Math.floor(Math.random() * 500 + 500 )
+        intervaloAleatorio = Math.floor(Math.random() * 500 + 500)
         frames = 0
     }
 
@@ -236,7 +245,7 @@ addEventListener('keydown', ({ key }) => {
                     },
                     velocidade: {
                         x: 0,
-                        y: -5
+                        y: -7
                     }
                 })
             )
