@@ -138,7 +138,7 @@ class Invasor {
             },
             velocidade: {
                 x: 0,
-                y: 5
+                y: 10
             }
         }))
     }
@@ -152,7 +152,7 @@ class Grid {
         }
 
         this.velocidade = {
-            x: 4,
+            x: 5,
             y: 0
         }
 
@@ -214,6 +214,15 @@ function animar() {
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     jogador.update()
+    projeteisInvasor.forEach((projetilInvasor, index) => {
+        if (projetilInvasor.posiçao.y + projetilInvasor.height >= canvas.height) {
+            setTimeout(() => {
+                projetilInvasor.splice(index, 1)
+            }, 0)
+        } else {
+            projetilInvasor.update()
+        }
+    })
     projeteis.forEach((projetil, index) => {
         if (projetil.posiçao.y + projetil.radius <= 0) {
             setTimeout(() => {
@@ -226,6 +235,9 @@ function animar() {
 
     grids.forEach((grid, gridIndex) => {
         grid.update()
+        if (frames % 100 === 0 && grid.invasores.length > 0) {
+            grid.invasores[Math.floor(Math.random() * grid.invasores.length)].atirar(projeteisInvasor)
+        }
         grid.invasores.forEach((invasor, i) => {
             invasor.update({ velocidade: grid.velocidade })
 
@@ -263,10 +275,10 @@ function animar() {
     })
 
     if (setas.ArrowLeft.pressed && jogador.posiçao.x >= 0) {
-        jogador.velocidade.x = -7
+        jogador.velocidade.x = -10
         jogador.rotaçao = -0.15
     } else if (setas.ArrowRight.pressed && jogador.posiçao.x + jogador.width <= canvas.width) {
-        jogador.velocidade.x = 7
+        jogador.velocidade.x = 10
         jogador.rotaçao = 0.15
     } else {
         jogador.velocidade.x = 0
@@ -302,7 +314,7 @@ addEventListener('keydown', ({ key }) => {
                     },
                     velocidade: {
                         x: 0,
-                        y: -9
+                        y: -15
                     }
                 })
             )
