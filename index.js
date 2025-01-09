@@ -189,7 +189,7 @@ function animar() {
         }
     })
 
-    grids.forEach(grid => {
+    grids.forEach((grid, gridIndex) => {
         grid.update()
         grid.invasores.forEach((invasor, i) => {
             invasor.update({ velo: grid.velocidade })
@@ -210,6 +210,16 @@ function animar() {
                             grid.invasores.splice(i, 1)
                             projeteis.splice(j, 1)
                         }
+                       
+                    if (grid.invasores.length > 0) {
+                        const primeiroInvasor = grid.invasores[0]
+                        const ultimoInvasor = grid.invasores[grid.invasores.length - 1]
+
+                        grid.width = ultimoInvasor.posiçao.x - primeiroInvasor.posiçao.x + 30
+                        grid.posiçao.x = primeiroInvasor.posiçao.x
+                    }else{
+                         grid.splice(gridIndex, 1)
+                    }
 
                     }, 0)
                 }
