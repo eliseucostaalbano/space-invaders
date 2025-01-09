@@ -72,6 +72,26 @@ class Projetil {
     }
 }
 
+class ProjetilInvasor {
+    constructor({ posiçao, velocidade }) {
+        this.posiçao = posiçao
+        this.velocidade = velocidade
+        this.width = 3
+        this.height = 10
+    }
+
+    desenhar() {
+        ctx.fillStyle = 'red'
+        ctx.fillRect(this.posiçao.x, this.posiçao.y, this.width, this.height)
+    }
+
+    update() {
+        this.desenhar()
+        this.posiçao.x += this.velocidade.x
+        this.posiçao.y += this.velocidade.y
+    }
+}
+
 class Invasor {
     constructor({ posiçao }) {
         this.velocidade = {
@@ -101,13 +121,26 @@ class Invasor {
         ctx.drawImage(this.image, this.posiçao.x, this.posiçao.y, this.width, this.height)
     }
 
-    update({ velo }) {
+    update({ velocidade }) {
         if (this.image) {
             this.desenhar()
-            this.posiçao.x += velo.x
-            this.posiçao.y += velo.y
+            this.posiçao.x += velocidade.x
+            this.posiçao.y += velocidade.y
         }
 
+    }
+
+    atirar(projeteisInvasor) {
+        projeteisInvasor.push(new ProjetilInvasor({
+            posiçao: {
+                x: this.posiçao.x + this.width / 2,
+                y: this.posiçao.y + this.height
+            },
+            velocidade: {
+                x: 0,
+                y: 5
+            }
+        }))
     }
 }
 
@@ -158,6 +191,8 @@ class Grid {
 const jogador = new Jogador()
 const projeteis = []
 const grids = []
+const projeteisInvasor = []
+
 const setas = {
     ArrowLeft: {
         pressed: false
@@ -192,7 +227,7 @@ function animar() {
     grids.forEach((grid, gridIndex) => {
         grid.update()
         grid.invasores.forEach((invasor, i) => {
-            invasor.update({ velo: grid.velocidade })
+            invasor.update({ velocidade: grid.velocidade })
 
             projeteis.forEach((projetil, j) => {
                 if (projetil.posiçao.y - projetil.radius <= invasor.posiçao.y + invasor.height
@@ -210,16 +245,16 @@ function animar() {
                             grid.invasores.splice(i, 1)
                             projeteis.splice(j, 1)
                         }
-                       
-                    if (grid.invasores.length > 0) {
-                        const primeiroInvasor = grid.invasores[0]
-                        const ultimoInvasor = grid.invasores[grid.invasores.length - 1]
 
-                        grid.width = ultimoInvasor.posiçao.x - primeiroInvasor.posiçao.x + 30
-                        grid.posiçao.x = primeiroInvasor.posiçao.x
-                    }else{
-                         grid.splice(gridIndex, 1)
-                    }
+                        if (grid.invasores.length > 0) {
+                            const primeiroInvasor = grid.invasores[0]
+                            const ultimoInvasor = grid.invasores[grid.invasores.length - 1]
+
+                            grid.width = ultimoInvasor.posiçao.x - primeiroInvasor.posiçao.x + 30
+                            grid.posiçao.x = primeiroInvasor.posiçao.x
+                        } else {
+                            grid.splice(gridIndex, 1)
+                        }
 
                     }, 0)
                 }
