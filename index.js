@@ -217,10 +217,16 @@ function animar() {
     projeteisInvasor.forEach((projetilInvasor, index) => {
         if (projetilInvasor.posiçao.y + projetilInvasor.height >= canvas.height) {
             setTimeout(() => {
-                projetilInvasor.splice(index, 1)
+                projeteisInvasor.splice(index, 1)
             }, 0)
         } else {
             projetilInvasor.update()
+        }
+
+        if (projetilInvasor.posiçao.y + projetilInvasor.height >= jogador.posiçao.y 
+            && projetilInvasor.posiçao.x + projetilInvasor.width >= jogador.posiçao.x
+            && projetilInvasor.posiçao.x <= jogador.posiçao.x + jogador.width) {
+            console.log("Você perdeu")
         }
     })
     projeteis.forEach((projetil, index) => {
