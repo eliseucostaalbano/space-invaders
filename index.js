@@ -78,20 +78,25 @@ class Particula {
         this.velocidade = velocidade
         this.radius = radius
         this.cor = cor
+        this.opacidade = 1
     }
 
     desenhar() {
+        ctx.save()
+        ctx.globalAlpha = this.opacidade
         ctx.beginPath()
         ctx.arc(this.posiçao.x, this.posiçao.y, this.radius, 0, Math.PI * 2)
         ctx.fillStyle = this.cor
         ctx.fill()
         ctx.closePath()
+        ctx.restore()
     }
 
     update() {
         this.desenhar()
         this.posiçao.x += this.velocidade.x
         this.posiçao.y += this.velocidade.y
+        this.opacidade -=  0.01
     }
 }
 
@@ -237,8 +242,15 @@ function animar() {
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     jogador.update()
-    particulas.forEach(particula => {
-        particula.update()
+    particulas.forEach((particula, i) => {
+        if (particula.opacidade <= 0) {
+            setTimeout(() => {
+                particulas.splice(i, 1)
+            }, 0);
+        } else {
+            particula.update()
+        }
+
     });
     projeteisInvasor.forEach((projetilInvasor, index) => {
         if (projetilInvasor.posiçao.y + projetilInvasor.height >= canvas.height) {
@@ -279,20 +291,6 @@ function animar() {
                     && projetil.posiçao.x - projetil.radius <= invasor.posiçao.x + invasor.width
                     && projetil.posiçao.y + projetil.radius >= invasor.posiçao.y) {
 
-                    particulas.push(new Particula({
-                        posiçao: {
-                            x: invasor.posiçao.x + invasor.width / 2,
-                            y: invasor.posiçao.y + invasor.height / 2
-                        },
-                        velocidade: {
-                           x:2,
-                           y:2
-                        },
-                        radius : 10,
-                        cor: 'aqua'
-                    }
-                    ))
-
                     setTimeout(() => {
                         const invasorEncontrado = grid.invasores.find(invasor2 => invasor2 === invasor
                         )
@@ -301,6 +299,22 @@ function animar() {
                         )
 
                         if (invasorEncontrado && projetilEncontrado) {
+                            for (let i = 0; i < 20; i++) {
+                                particulas.push(new Particula({
+                                    posiçao: {
+                                        x: invasor.posiçao.x + invasor.width / 2,
+                                        y: invasor.posiçao.y + invasor.height / 2
+                                    },
+                                    velocidade: {
+                                        x: (Math.random() - 0.5) * 3,
+                                        y: (Math.random() - 0.5) * 3
+                                    },
+                                    radius: Math.random() * 3,
+                                    cor: '#BAA0DE'
+                                }
+                                ))
+
+                            }
                             grid.invasores.splice(i, 1)
                             projeteis.splice(j, 1)
                         }
