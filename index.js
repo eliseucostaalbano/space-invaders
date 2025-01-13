@@ -72,6 +72,29 @@ class Projetil {
     }
 }
 
+class Particula {
+    constructor({ posiçao, velocidade, radius, cor }) {
+        this.posiçao = posiçao
+        this.velocidade = velocidade
+        this.radius = radius
+        this.cor = cor
+    }
+
+    desenhar() {
+        ctx.beginPath()
+        ctx.arc(this.posiçao.x, this.posiçao.y, this.radius, 0, Math.PI * 2)
+        ctx.fillStyle = this.cor
+        ctx.fill()
+        ctx.closePath()
+    }
+
+    update() {
+        this.desenhar()
+        this.posiçao.x += this.velocidade.x
+        this.posiçao.y += this.velocidade.y
+    }
+}
+
 class ProjetilInvasor {
     constructor({ posiçao, velocidade }) {
         this.posiçao = posiçao
@@ -173,7 +196,6 @@ class Grid {
                 )
             }
         }
-        console.log(this.invasores)
     }
 
     update() {
@@ -192,6 +214,7 @@ const jogador = new Jogador()
 const projeteis = []
 const grids = []
 const projeteisInvasor = []
+const particulas = []
 
 const setas = {
     ArrowLeft: {
@@ -214,6 +237,9 @@ function animar() {
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     jogador.update()
+    particulas.forEach(particula => {
+        particula.update()
+    });
     projeteisInvasor.forEach((projetilInvasor, index) => {
         if (projetilInvasor.posiçao.y + projetilInvasor.height >= canvas.height) {
             setTimeout(() => {
@@ -223,7 +249,7 @@ function animar() {
             projetilInvasor.update()
         }
 
-        if (projetilInvasor.posiçao.y + projetilInvasor.height >= jogador.posiçao.y 
+        if (projetilInvasor.posiçao.y + projetilInvasor.height >= jogador.posiçao.y
             && projetilInvasor.posiçao.x + projetilInvasor.width >= jogador.posiçao.x
             && projetilInvasor.posiçao.x <= jogador.posiçao.x + jogador.width) {
             console.log("Você perdeu")
@@ -252,6 +278,21 @@ function animar() {
                     && projetil.posiçao.x + projetil.radius >= invasor.posiçao.x
                     && projetil.posiçao.x - projetil.radius <= invasor.posiçao.x + invasor.width
                     && projetil.posiçao.y + projetil.radius >= invasor.posiçao.y) {
+
+                    particulas.push(new Particula({
+                        posiçao: {
+                            x: invasor.posiçao.x + invasor.width / 2,
+                            y: invasor.posiçao.y + invasor.height / 2
+                        },
+                        velocidade: {
+                           x:2,
+                           y:2
+                        },
+                        radius : 10,
+                        cor: 'aqua'
+                    }
+                    ))
+
                     setTimeout(() => {
                         const invasorEncontrado = grid.invasores.find(invasor2 => invasor2 === invasor
                         )
