@@ -1,3 +1,4 @@
+const placarEl = document.querySelector('#placarEl')
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 
@@ -96,7 +97,7 @@ class Particula {
         this.desenhar()
         this.posiçao.x += this.velocidade.x
         this.posiçao.y += this.velocidade.y
-        this.opacidade -=  0.01
+        this.opacidade -= 0.01
     }
 }
 
@@ -235,8 +236,9 @@ const setas = {
 
 let frames = 0
 let intervaloAleatorio = Math.floor(Math.random() * 500 + 500)
+let placar = 0
 
-function criarParticulas({object, cor}) {
+function criarParticulas({ object, cor }) {
     for (let i = 0; i < 20; i++) {
         particulas.push(new Particula({
             posiçao: {
@@ -248,7 +250,7 @@ function criarParticulas({object, cor}) {
                 y: (Math.random() - 0.5) * 3
             },
             radius: Math.random() * 3,
-            cor: cor ||'#BAA0DE'
+            cor: cor || '#BAA0DE'
         }
         ))
 
@@ -283,9 +285,8 @@ function animar() {
             && projetilInvasor.posiçao.x + projetilInvasor.width >= jogador.posiçao.x
             && projetilInvasor.posiçao.x <= jogador.posiçao.x + jogador.width) {
             setTimeout(() => {
-                    projeteisInvasor.splice(index, 1)
-                }, 0)
-            console.log("Você perdeu")
+                projeteisInvasor.splice(index, 1)
+            }, 0)
             criarParticulas({
                 object: jogador,
                 cor: 'red'
@@ -324,9 +325,11 @@ function animar() {
                         )
 
                         if (invasorEncontrado && projetilEncontrado) {
-                        criarParticulas({
-                            object: invasor
-                        })
+                            placar += 100
+                            placarEl.innerHTML = placar
+                            criarParticulas({
+                                object: invasor
+                            })
 
                             grid.invasores.splice(i, 1)
                             projeteis.splice(j, 1)
