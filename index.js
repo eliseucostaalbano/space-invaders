@@ -236,6 +236,24 @@ const setas = {
 let frames = 0
 let intervaloAleatorio = Math.floor(Math.random() * 500 + 500)
 
+function criarParticulas({object, cor}) {
+    for (let i = 0; i < 20; i++) {
+        particulas.push(new Particula({
+            posiçao: {
+                x: object.posiçao.x + object.width / 2,
+                y: object.posiçao.y + object.height / 2
+            },
+            velocidade: {
+                x: (Math.random() - 0.5) * 3,
+                y: (Math.random() - 0.5) * 3
+            },
+            radius: Math.random() * 3,
+            cor: cor ||'#BAA0DE'
+        }
+        ))
+
+    }
+}
 
 function animar() {
     requestAnimationFrame(animar)
@@ -264,7 +282,14 @@ function animar() {
         if (projetilInvasor.posiçao.y + projetilInvasor.height >= jogador.posiçao.y
             && projetilInvasor.posiçao.x + projetilInvasor.width >= jogador.posiçao.x
             && projetilInvasor.posiçao.x <= jogador.posiçao.x + jogador.width) {
+            setTimeout(() => {
+                    projeteisInvasor.splice(index, 1)
+                }, 0)
             console.log("Você perdeu")
+            criarParticulas({
+                object: jogador,
+                cor: 'red'
+            })
         }
     })
     projeteis.forEach((projetil, index) => {
@@ -299,22 +324,10 @@ function animar() {
                         )
 
                         if (invasorEncontrado && projetilEncontrado) {
-                            for (let i = 0; i < 20; i++) {
-                                particulas.push(new Particula({
-                                    posiçao: {
-                                        x: invasor.posiçao.x + invasor.width / 2,
-                                        y: invasor.posiçao.y + invasor.height / 2
-                                    },
-                                    velocidade: {
-                                        x: (Math.random() - 0.5) * 3,
-                                        y: (Math.random() - 0.5) * 3
-                                    },
-                                    radius: Math.random() * 3,
-                                    cor: '#BAA0DE'
-                                }
-                                ))
+                        criarParticulas({
+                            object: invasor
+                        })
 
-                            }
                             grid.invasores.splice(i, 1)
                             projeteis.splice(j, 1)
                         }
