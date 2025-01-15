@@ -14,6 +14,7 @@ class Jogador {
         }
 
         this.rotaçao = 0
+        this.opacidade = 1
 
         const imagem = new Image()
         imagem.src = './images/spaceship.png'
@@ -35,6 +36,7 @@ class Jogador {
         // ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
 
         ctx.save()
+        ctx.globalAlpha = this.opacidade
         ctx.translate(jogador.posiçao.x + jogador.width / 2, jogador.posiçao.y + jogador.height / 2)
         ctx.rotate(this.rotaçao)
         ctx.translate(-jogador.posiçao.x - jogador.width / 2, -jogador.posiçao.y - jogador.height / 2)
@@ -74,12 +76,13 @@ class Projetil {
 }
 
 class Particula {
-    constructor({ posiçao, velocidade, radius, cor }) {
+    constructor({ posiçao, velocidade, radius, cor, desaparece }) {
         this.posiçao = posiçao
         this.velocidade = velocidade
         this.radius = radius
         this.cor = cor
         this.opacidade = 1
+        this.desaparece = desaparece
     }
 
     desenhar() {
@@ -97,7 +100,9 @@ class Particula {
         this.desenhar()
         this.posiçao.x += this.velocidade.x
         this.posiçao.y += this.velocidade.y
-        this.opacidade -= 0.01
+        if (this.desaparece) {
+            this.opacidade -= 0.01
+        }
     }
 }
 
@@ -236,9 +241,31 @@ const setas = {
 
 let frames = 0
 let intervaloAleatorio = Math.floor(Math.random() * 500 + 500)
+let game = {
+    over: false,
+    ativo: true
+}
 let placar = 0
 
-function criarParticulas({ object, cor }) {
+
+for (let i = 0; i < 100; i++) {
+    particulas.push(new Particula({
+        posiçao: {
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height
+        },
+        velocidade: {
+            x: 0,
+            y: 0.3
+        },
+        radius: Math.random() * 2,
+        cor: 'white'
+    }
+    ))
+
+}
+
+function criarParticulas({ object, cor, desaparece }) {
     for (let i = 0; i < 20; i++) {
         particulas.push(new Particula({
             posiçao: {
@@ -250,7 +277,8 @@ function criarParticulas({ object, cor }) {
                 y: (Math.random() - 0.5) * 3
             },
             radius: Math.random() * 3,
-            cor: cor || '#BAA0DE'
+            cor: cor || '#BAA0DE',
+            desaparece: true
         }
         ))
 
@@ -258,11 +286,18 @@ function criarParticulas({ object, cor }) {
 }
 
 function animar() {
+    if(!game.ativo) return
     requestAnimationFrame(animar)
     ctx.fillStyle = 'black'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     jogador.update()
     particulas.forEach((particula, i) => {
+
+        if (particula.posiçao.y - particula.radius >= canvas.height) {
+            particula.posiçao.x = Math.random() * canvas.width
+            particula.posiçao.y = -particula.radius
+        }
+
         if (particula.opacidade <= 0) {
             setTimeout(() => {
                 particulas.splice(i, 1)
@@ -286,7 +321,14 @@ function animar() {
             && projetilInvasor.posiçao.x <= jogador.posiçao.x + jogador.width) {
             setTimeout(() => {
                 projeteisInvasor.splice(index, 1)
+                jogador.opacidade = 0
+                game.over = true
             }, 0)
+
+            setTimeout(() => {
+            game.ativo = false
+            }, 2000)
+
             criarParticulas({
                 object: jogador,
                 cor: 'red'
@@ -374,6 +416,7 @@ function animar() {
 animar()
 
 addEventListener('keydown', ({ key }) => {
+    if(game.over) return
     switch (key) {
         case 'ArrowLeft':
             setas.ArrowLeft.pressed = true
